@@ -1,0 +1,240 @@
+<!--Load the AJAX API-->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<?php defined('MW_PATH') || exit('No direct script access allowed');
+
+/**
+ * This file is part of the MailWizz EMA application.
+ *
+ * @package Unika DMS
+ * @author Serban George Cristian <business@unikainfocom.in>
+ * @link http://www.unikainfocom.in/
+ * @copyright 2013-2017 Unika DMS (http://www.unikainfocom.in/)
+ * @license http://www.unikainfocom.in/support
+ * @since 1.3.5.9
+ */
+
+/**
+ * This hook gives a chance to prepend content or to replace the default view content with a custom content.
+ * Please note that from inside the action callback you can access all the controller view
+ * variables via {@CAttributeCollection $collection->controller->data}
+ * In case the content is replaced, make sure to set {@CAttributeCollection $collection->renderContent} to false
+ * in order to stop rendering the default content.
+ * @since 1.3.3.1
+ */
+$hooks->doAction('before_view_file_content', $viewCollection = new CAttributeCollection(array(
+    'controller'    => $this,
+    'renderContent' => true,
+)));
+
+// and render if allowed
+if ($viewCollection->renderContent) {
+    /**
+     * This hook gives a chance to prepend content before the active form or to replace the default active form entirely.
+     * Please note that from inside the action callback you can access all the controller view variables
+     * via {@CAttributeCollection $collection->controller->data}
+     * In case the form is replaced, make sure to set {@CAttributeCollection $collection->renderForm} to false
+     * in order to stop rendering the default content.
+     * @since 1.3.3.1
+     */
+    $hooks->doAction('before_active_form', $collection = new CAttributeCollection(array(
+        'controller'    => $this,
+        'renderForm'    => true,
+    )));
+
+    // and render if allowed
+    if ($collection->renderForm) {
+        //$form = $this->beginWidget('CActiveForm');
+		/*$form = $this->beginWidget('CActiveForm', array(
+            'htmlOptions' => array('enctype' => 'multipart/form-data')
+        ));
+		*/
+        ?>
+		<div class="portlet-title">
+			<div class="caption">
+				<span class="glyphicon glyphicon-envelope"></span>
+				<span class="caption-subject font-dark sbold uppercase">
+					<?php echo $pageHeading;?>
+				</span>
+			</div>
+			<div class="actions">
+				<div class="btn-group btn-group-devided">
+					<?php if (!$message->isNewRecord) { ?>
+					<?php //echo CHtml::link(Yii::t('app', 'Create new'), array('socialsetting/create'), array('class' => 'btn btn-primary btn-xs', 'title' => Yii::t('app', 'Create new')));?>
+					<?php } ?>
+					<?php echo CHtml::link(Yii::t('app', 'Cancel'), array('socialsetting/connect'), array('class' => 'btn btn-primary btn-xs', 'title' => Yii::t('app', 'Cancel')));?>
+				</div>
+			</div>
+		</div>
+		<div class="portlet-body">
+			<?php
+			/**
+			 * This hook gives a chance to prepend content before the active form fields.
+			 * Please note that from inside the action callback you can access all the controller view variables
+			 * via {@CAttributeCollection $collection->controller->data}
+			 * @since 1.3.3.1
+			 */
+			$hooks->doAction('before_active_form_fields', new CAttributeCollection(array(
+				'controller'    => $this,
+				//'form'          => $form
+			)));
+			?>
+			<div class="clearfix"><!-- --></div>
+			
+			
+			<style>
+			.vik{
+				border-bottom: 1px solid grey;
+				padding-bottom:5px 0px;
+			}
+			</style>
+			<?php //print_r($report); ?>
+			<?php //print_r($report->numLikes); ?>
+			<?php //print_r($report->updateComments->_total); ?>
+			<div class="vik form-group col-lg-12">
+				<div class="col-lg-3">
+					 <span style="color:green; font-weight:bold"> <h2>Likes : </h2></span>
+				</div>
+				<div class="col-lg-8">
+					<button class="btn btn-info "> 
+					<h4>
+					<?php 
+					
+						$lcount= $report->numLikes ;
+						//$lcount= '21' ;
+						echo $lcount;
+					?> 
+					</h4>
+					</button>
+				</div>
+				<div class="col-lg-12">
+					<!--Div that will hold the pie chart-->
+					<div id="chart_div"></div>
+				</div>
+			</div>
+			<div class="vik form-group col-lg-12">
+				<div class="col-lg-3">
+					 <span style="color:red; font-weight:bold"> <h2>Comments : </h2></span>
+				</div>
+				<div class="col-lg-8">
+					<button class="btn btn-info "> <h4> 
+					
+					<?php 
+						$ccount= $report->updateComments->_total ;
+						//$ccount= '1' ;
+						echo $ccount;
+					?> 
+					</h4></button>
+				</div>
+				<div class="col-lg-12">
+					<!--Div that will hold the pie chart-->
+					<div id="chart_div2"></div>
+				</div>
+			</div>
+			
+			
+			<div class="clearfix"><!-- --></div>
+			
+			<script type="text/javascript">
+
+			  // Load the Visualization API and the corechart package.
+			  google.charts.load('current', {'packages':['corechart']});
+
+			  // Set a callback to run when the Google Visualization API is loaded.
+			  google.charts.setOnLoadCallback(drawChart);
+
+			  // Callback that creates and populates a data table,
+			  // instantiates the pie chart, passes in the data and
+			  // draws it.
+			  function drawChart() {
+
+				var lcount= <?php echo @$lcount; ?>;
+			  
+				// Create the data table.
+				var data = new google.visualization.DataTable();
+				data.addColumn('string', 'Topping');
+				data.addColumn('number', 'Slices');
+				data.addRows([
+				  ['Like Count', lcount]
+				]);
+
+				// Set chart options
+				var options = {
+								'title':'Like Report',
+								'width':400,
+								'height':300
+							};
+
+				// Instantiate and draw our chart, passing in some options.
+				var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+				chart.draw(data, options);
+				
+				
+				var ccount= <?php echo @$ccount; ?>;
+			  
+				// Create the data table.
+				var data2 = new google.visualization.DataTable();
+				data2.addColumn('string', 'Topping');
+				data2.addColumn('number', 'Slices');
+				data2.addRows([
+				  ['Comment Count', ccount]
+				]);
+
+				// Set chart options
+				var options2 = {
+								'title':'Comment Report',
+								'width':400,
+								'height':300
+							};
+
+				// Instantiate and draw our chart, passing in some options.
+				var chart2 = new google.visualization.PieChart(document.getElementById('chart_div2'));
+				chart2.draw(data2, options2);
+				
+			  }
+			</script>
+			
+		
+			<?php
+			/**
+			 * This hook gives a chance to append content after the active form fields.
+			 * Please note that from inside the action callback you can access all the controller view variables
+			 * via {@CAttributeCollection $collection->controller->data}
+			 * @since 1.3.3.1
+			 */
+			$hooks->doAction('after_active_form_fields', new CAttributeCollection(array(
+				'controller'    => $this,
+				//'form'          => $form
+			)));
+			?>
+			<div class="row">
+				<!--
+				<div class="col-md-12">
+					<button type="submit" class="btn green btn-submit" data-loading-text="<?php echo Yii::t('app', 'Please wait, processing...');?>"><?php echo Yii::t('app', 'Save changes');?></button>
+				</div>
+				-->
+			</div>
+		</div>
+        <?php
+        //$this->endWidget();
+    }
+    /**
+     * This hook gives a chance to append content after the active form.
+     * Please note that from inside the action callback you can access all the controller view variables
+     * via {@CAttributeCollection $collection->controller->data}
+     * @since 1.3.3.1
+     */
+    $hooks->doAction('after_active_form', new CAttributeCollection(array(
+        'controller'      => $this,
+        'renderedForm'    => $collection->renderForm,
+    )));
+}
+/**
+ * This hook gives a chance to append content after the view file default content.
+ * Please note that from inside the action callback you can access all the controller view
+ * variables via {@CAttributeCollection $collection->controller->data}
+ * @since 1.3.3.1
+ */
+$hooks->doAction('after_view_file_content', new CAttributeCollection(array(
+    'controller'        => $this,
+    'renderedContent'   => $viewCollection->renderContent,
+)));

@@ -1,0 +1,4 @@
+Email,first_name (mandatory),last_name (mandatory),Mobile,group,Source,birthday,balance,card_number,card_name,cvv,expiration,Address,City,State,Zip,country,custom1,custom2,custom3
+a@domain.com,John,Doe,1234567890,Group Name,company,08-05-1970,,5.56E+15,Adam,,,,,,,,,,
+b@domain.com,Jane,Doe,1234567890,Group Name,company,08-05-1970,,,,,,,,,,,,,
+c@domain.com,Joe,Doe,1234567890,Group Name,company,08-05-1970,,,,,,,,,,,,,
